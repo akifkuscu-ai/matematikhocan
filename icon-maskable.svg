@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgMask" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="50%" stop-color="#4338ca" />
+      <stop offset="100%" stop-color="#312e81" />
+    </linearGradient>
+  </defs>
+  <!-- Full square for maskable Android launcher icon -->
+  <rect width="512" height="512" fill="url(#bgMask)" />
+  <g transform="translate(0, 20)">
+    <polygon points="256,130 380,190 256,250 132,190" fill="#ffffff" />
+    <path d="M172,210 L172,275 C172,315 340,315 340,275 L340,210 L256,252 Z" fill="#e0e7ff" />
+    <circle cx="330" cy="330" r="54" fill="#10b981" stroke="#ffffff" stroke-width="6" />
+    <path d="M310,332 L324,346 L352,316" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+</svg>

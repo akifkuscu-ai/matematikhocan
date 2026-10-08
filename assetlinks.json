@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.matematikhocan.app",
+      "sha256_cert_fingerprints": [
+        "14:6D:E9:7D:0F:52:AB:60:88:84:DE:6B:A7:28:B6:BA:57:3E:68:57:BC:1A:1D:64:1C:86:14:8B:5B:3C:A9:B2"
+      ]
+    }
+  }
+]

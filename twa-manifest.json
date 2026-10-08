@@ -1,0 +1,46 @@
+{
+  "packageId": "com.sorucoz.app",
+  "host": "sorucoz.app",
+  "name": "SoruÇöz - Soru Çözüm Platformu",
+  "launcherName": "SoruÇöz",
+  "display": "standalone",
+  "themeColor": "#4F46E5",
+  "themeColorDark": "#0F172A",
+  "navigationColor": "#0F172A",
+  "navigationColorDark": "#0F172A",
+  "navigationDividerColor": "#1E293B",
+  "navigationDividerColorDark": "#1E293B",
+  "backgroundColor": "#0F172A",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://sorucoz.app/icon-512.svg",
+  "maskableIconUrl": "https://sorucoz.app/icon-maskable.svg",
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Soru Sor",
+      "shortName": "Soru Sor",
+      "url": "/?action=ask",
+      "icon": "https://sorucoz.app/icon-192.svg"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://sorucoz.app/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": {
+      "enabled": false
+    },
+    "playBilling": {
+      "enabled": false
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://sorucoz.app/"
+}

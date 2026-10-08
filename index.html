@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>matematikhocan.com | Online Matematik & Geometri Soru Çözümü</title>
+    
+    <meta name="description" content="Çözemediğin matematik ve geometri sorularını matematikhocan.com'a yükle; uzman öğretmenlerden anında adım adım formüllü ve HD videolu çözüm al." />
+    <link rel="canonical" href="https://matematikhocan.com" />
+
+    <!-- OpenGraph Social Cards -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="matematikhocan.com | Online Matematik & Geometri Soru Çözümü" />
+    <meta property="og:description" content="Çözemediğin matematik ve geometri sorularını matematikhocan.com'a yükle; uzman öğretmenlerden anında adım adım formüllü ve HD videolu çözüm al." />
+    <meta property="og:site_name" content="matematikhocan.com" />
+    <meta property="og:url" content="https://matematikhocan.com" />
+
+    <!-- Twitter / X Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="matematikhocan.com | Online Matematik & Geometri Soru Çözümü" />
+    <meta name="twitter:description" content="Çözemediğin matematik ve geometri sorularını matematikhocan.com'a yükle; uzman öğretmenlerden anında adım adım formüllü ve HD videolu çözüm al." />
+
+    <!-- Schema.org JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "matematikhocan.com",
+      "url": "https://matematikhocan.com",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All",
+      "description": "Öğrencilerin çözemediği matematik ve geometri sorularına uzman öğretmenlerden anında yazılı ve HD videolu çözüm sunan web platformu.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "TRY",
+        "description": "Haftalık 3 standart soru çözümü tamamen ücretsiz"
+      }
+    }
+    </script>
+    
+    <!-- PWA & Mobile Web Meta Tags -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#4f46e5" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="matematikhocan.com" />
+    <meta name="application-name" content="matematikhocan.com" />
+    
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icon-192.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script>
+      // Register Service Worker for PWA
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('matematikhocan.com Service Worker Aktif:', reg.scope))
+            .catch(err => console.log('SW registration skipped:', err));
+        });
+      }
+    </script>
+  </head>
+  <body class="bg-slate-50 text-slate-900 font-['Plus_Jakarta_Sans',sans-serif] antialiased selection:bg-indigo-500 selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

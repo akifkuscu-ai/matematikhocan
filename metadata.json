@@ -1,0 +1,6 @@
+{
+  "name": "SoruCoz - Uzman Matematik & Geometri Çözüm Platformu",
+  "description": "Öğrencilerin çözemediği matematik ve geometri sorularının fotoğraflarını yükleyerek uzman eğitmenlerden anında yazılı ve HD videolu çözümler aldığı, eğitmen puanlama ve abonelik sistemi içeren platform.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
