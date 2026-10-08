@@ -244,6 +244,26 @@ export interface ServerBindingInfo {
   policy: string;
 }
 
+export interface OnlineCourse {
+  id: string;
+  title: string;
+  subject: Subject;
+  gradeLevel: GradeLevel;
+  description: string;
+  instructorName: string;
+  instructorTitle?: string;
+  price: number; // Manually entered price in TL
+  thumbnailUrl: string;
+  videoUrl: string;
+  durationMinutes: number;
+  lessonPdfUrl?: string;
+  lessonPdfTitle?: string;
+  homeworkPdfUrl?: string;
+  homeworkPdfTitle?: string;
+  createdAt: string;
+  purchased?: boolean;
+}
+
 export type NotificationType = 
   | 'solution_ready'
   | 'question_solved'
@@ -255,6 +275,7 @@ export type NotificationType =
   | 'tutor_authorized'
   | 'subscription_active'
   | 'subscription_updated'
+  | 'course_purchased'
   | 'system';
 
 export interface AppNotification {

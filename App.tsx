@@ -12,8 +12,11 @@ import {
   TutorsList 
 } from './components/TutorsList';
 import { 
-  SubscriptionPlans 
-} from './components/SubscriptionPlans';
+  OnlineCoursesView 
+} from './components/OnlineCoursesView';
+import { 
+  WhiteboardView 
+} from './components/WhiteboardView';
 import { 
   StudentProfileView 
 } from './components/StudentProfileView';
@@ -61,7 +64,8 @@ import {
   AppNotification, 
   SubscriptionPlanId,
   CurrentUser,
-  PendingAlertSettings
+  PendingAlertSettings,
+  OnlineCourse
 } from './types';
 import { 
   INITIAL_QUESTIONS, 
@@ -69,7 +73,8 @@ import {
   INITIAL_STUDENT_PROFILE, 
   INITIAL_NOTIFICATIONS,
   DEFAULT_PENDING_ALERT_SETTINGS,
-  DEMO_STUDENTS
+  DEMO_STUDENTS,
+  INITIAL_ONLINE_COURSES
 } from './data/mockData';
 import { 
   Sparkles, 
@@ -103,6 +108,7 @@ export default function App() {
   // Application Data States
   const [questions, setQuestions] = useState<Question[]>(INITIAL_QUESTIONS);
   const [tutors, setTutors] = useState<Tutor[]>(INITIAL_TUTORS);
+  const [courses, setCourses] = useState<OnlineCourse[]>(INITIAL_ONLINE_COURSES);
   const [studentProfile, setStudentProfile] = useState<StudentProfile>(INITIAL_STUDENT_PROFILE);
   const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
   const [alertSettings, setAlertSettings] = useState<PendingAlertSettings>(DEFAULT_PENDING_ALERT_SETTINGS);
@@ -156,9 +162,10 @@ export default function App() {
   // Fetch initial data from Express backend
   const fetchData = useCallback(async () => {
     try {
-      const [qRes, tRes, pRes, nRes, aRes] = await Promise.all([
+      const [qRes, tRes, cRes, pRes, nRes, aRes] = await Promise.all([
         fetch('/api/questions').catch(() => null),
         fetch('/api/tutors').catch(() => null),
+        fetch('/api/courses').catch(() => null),
         fetch('/api/student/profile').catch(() => null),
         fetch('/api/notifications').catch(() => null),
         fetch('/api/system/alert-settings').catch(() => null)
@@ -173,6 +180,11 @@ export default function App() {
         const tData = await tRes.json();
         const list = Array.isArray(tData) ? tData : (Array.isArray(tData?.data) ? tData.data : []);
         setTutors(list);
+      }
+      if (cRes && cRes.ok) {
+        const cData = await cRes.json();
+        const list = Array.isArray(cData) ? cData : (Array.isArray(cData?.data) ? cData.data : []);
+        setCourses(list);
       }
       if (pRes && pRes.ok) {
         const pData = await pRes.json();
@@ -593,6 +605,13 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-100/70 flex flex-col font-sans text-slate-900 selection:bg-indigo-500 selection:text-white">
       
+      {/* SİTE GİRİŞİ: YAPIM AŞAMASINDAYIZ BİLDİRİM BANNERI */}
+      <div className="bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-slate-950 font-black text-xs sm:text-sm py-2.5 px-4 text-center border-b border-amber-500 shadow-xs flex items-center justify-center gap-2">
+        <span className="text-base animate-pulse">🚧</span>
+        <span>SİTEMİZ YAPIM AŞAMASINDADIR | Çok Yakında Tüm Özellikleriyle Kesintisiz Hizmetinizdeyiz!</span>
+        <span className="text-base animate-pulse">🚧</span>
+      </div>
+
       {/* Toast Banner */}
       {toastMessage && (
         <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-4 duration-200">
@@ -646,7 +665,7 @@ export default function App() {
                   π
                 </div>
                 <p className="text-slate-200">
-                  <strong className="text-white">matematikhocan.com:</strong> Türkiye'nin Matematik & Geometri Soru Çözüm Web Sitesi. Takıldığın her soruya 10 dakikada HD videolu çözüm al!
+                  <strong className="text-white">matematikhocan.com:</strong> Türkiye'nin Matematik & Geometri Soru Çözüm Web Sitesi. Takıldığın her soruya alanında uzman öğretmenlerden formüllü yazılı ve HD videolu çözüm al!
                 </p>
               </div>
 
@@ -701,7 +720,7 @@ export default function App() {
                   studentProfile={studentProfile}
                   tutors={tutors}
                   onOpenAskQuestion={() => setIsAskModalOpen(true)}
-                  onOpenSubscribe={() => setActiveTab('subscription')}
+                  onOpenSubscribe={() => setActiveTab('courses')}
                   onSelectQuestion={q => setSelectedQuestionForDetail(q)}
                   onNavigateToHistory={() => setActiveTab('history')}
                   onNavigateToTutors={() => setActiveTab('tutors')}
@@ -716,26 +735,32 @@ export default function App() {
                 />
               )}
 
+              {activeTab === 'courses' && (
+                <OnlineCoursesView
+                  courses={courses}
+                  onCoursePurchased={fetchData}
+                  showToast={showToast}
+                />
+              )}
+
+              {activeTab === 'whiteboard' && (
+                <WhiteboardView />
+              )}
+
               {activeTab === 'tutors' && (
                 <TutorsList
                   tutors={tutors}
                   onSelectTutorToAsk={() => setIsAskModalOpen(true)}
-                />
-              )}
-
-              {activeTab === 'subscription' && (
-                <SubscriptionPlans
-                  studentProfile={studentProfile}
-                  onSubscribe={handleSubscribe}
+                  onOpenManageTutors={() => setIsManageTutorsOpen(true)}
                 />
               )}
 
               {activeTab === 'guide' && (
                 <WebsiteInfoView
                   onOpenAskQuestion={() => setIsAskModalOpen(true)}
-                  onOpenSubscribe={() => setActiveTab('subscription')}
+                  onOpenSubscribe={() => setActiveTab('courses')}
                   onNavigateToTutors={() => setActiveTab('tutors')}
-                  onShowToast={showToast}
+                  showToast={showToast}
                 />
               )}
 
@@ -744,7 +769,7 @@ export default function App() {
                   studentProfile={studentProfile}
                   totalQuestionsCount={questions.length}
                   solvedQuestionsCount={questions.filter(q => q.status === 'solved').length}
-                  onOpenSubscribe={() => setActiveTab('subscription')}
+                  onOpenSubscribe={() => setActiveTab('courses')}
                   onResetLimitsDemo={handleResetLimitsDemo}
                   onNavigateToHistory={() => setActiveTab('history')}
                 />
@@ -754,11 +779,32 @@ export default function App() {
 
           {/* TUTOR VIEWS */}
           {currentRole === 'tutor' && (
-            <TutorPoolView
-              questions={questions}
-              tutors={tutors}
-              activeSubTab={activeTab as any}
-              onSubTabChange={tab => setActiveTab(tab)}
+            <>
+              {activeTab === 'courses' && (
+                <OnlineCoursesView
+                  courses={courses}
+                  onCoursePurchased={fetchData}
+                  showToast={showToast}
+                />
+              )}
+
+              {activeTab === 'whiteboard' && (
+                <WhiteboardView />
+              )}
+
+              {(activeTab === 'tutor-pool' || activeTab === 'tutor-solved' || activeTab === 'tutor-reviews') && (
+                <TutorPoolView
+                  questions={questions}
+                  tutors={tutors}
+                  activeSubTab={activeTab as any}
+                  onSubTabChange={tab => setActiveTab(tab)}
+                  onClaimAndSolve={(q, t) => handleTutorClaimAndSolve(q, t)}
+                  onViewSolution={q => setSelectedQuestionForDetail(q)}
+                  onOpenManageTutors={() => setIsManageTutorsOpen(true)}
+                />
+              )}
+            </>
+          )}
               onClaimAndSolve={(q, t) => handleTutorClaimAndSolve(q, t)}
               onViewSolution={q => setSelectedQuestionForDetail(q)}
             />

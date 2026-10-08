@@ -63,7 +63,7 @@ export const StudentHomeView: React.FC<StudentHomeViewProps> = ({
           </h1>
 
           <p className="text-xs sm:text-sm text-indigo-100/90 leading-relaxed">
-            Takıldığın soruyu kameranla çek veya galeriden yükle. Türkiye'nin en iyi öğretmenleri sorunu <strong>1080p HD Videolu</strong> ya da <strong>yazılı & formüllü</strong> olarak dakikalar içinde çözsün.
+            Takıldığın soruyu kameranla çek veya galeriden yükle. Türkiye'nin en iyi öğretmenleri sorunu <strong>1080p HD Videolu</strong> ya da <strong>yazılı & formüllü</strong> olarak adım adım özenle çözsün.
           </p>
 
           {/* Daily Limit Status & Action Row */}
@@ -82,27 +82,9 @@ export const StudentHomeView: React.FC<StudentHomeViewProps> = ({
               <div className="flex items-center gap-1.5 text-indigo-100">
                 <FileText className="w-4 h-4 text-indigo-300" />
                 <span>
-                  {studentProfile.activePlan === 'free' ? 'Haftalık Kalan: ' : 'Standart: '}
-                  <strong>
-                    {studentProfile.activePlan === 'free' 
-                      ? `${studentProfile.weeklyStandardRemaining ?? studentProfile.dailyStandardRemaining}/3 Hak`
-                      : `${studentProfile.dailyStandardRemaining} Hak`}
-                  </strong>
+                  Haftalık Kalan: <strong>{studentProfile.weeklyStandardRemaining ?? studentProfile.dailyStandardRemaining ?? 3}/3 Soru</strong>
                 </span>
               </div>
-              <div className="h-3 w-px bg-white/20" />
-              <div className="flex items-center gap-1.5 text-indigo-100">
-                <Video className="w-4 h-4 text-rose-300" />
-                <span>HD Video: <strong>{studentProfile.dailyVideoRemaining} Hak</strong></span>
-              </div>
-              {studentProfile.activePlan === 'free' && (
-                <button
-                  onClick={onOpenSubscribe}
-                  className="px-2.5 py-1 bg-amber-400 text-slate-900 font-extrabold text-[11px] rounded-lg hover:bg-amber-300 transition ml-1"
-                >
-                  Limit Artır
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -318,40 +300,46 @@ export const StudentHomeView: React.FC<StudentHomeViewProps> = ({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {safeTutors.slice(0, 4).map(tutor => (
-            <div
-              key={tutor.id}
-              className="bg-white p-4 rounded-2xl border border-slate-200 hover:border-indigo-300 hover:shadow-xs transition flex flex-col justify-between space-y-3"
-            >
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <img
-                    src={tutor.avatar}
-                    alt={tutor.name}
-                    className="w-12 h-12 rounded-xl object-cover"
-                  />
-                  <span className="w-3 h-3 rounded-full bg-emerald-500 border-2 border-white absolute -bottom-0.5 -right-0.5" />
+        {safeTutors.length === 0 ? (
+          <div className="bg-white rounded-2xl p-6 text-center border border-slate-200 shadow-xs text-slate-500 text-xs">
+            Henüz sisteme tanımlanmış öğretmen bulunmuyor. Yeni eğitmenler yönetici portalından eklenebilir.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {safeTutors.slice(0, 4).map(tutor => (
+              <div
+                key={tutor.id}
+                className="bg-white p-4 rounded-2xl border border-slate-200 hover:border-indigo-300 hover:shadow-xs transition flex flex-col justify-between space-y-3"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <img
+                      src={tutor.avatar}
+                      alt={tutor.name}
+                      className="w-12 h-12 rounded-xl object-cover"
+                    />
+                    <span className="w-3 h-3 rounded-full bg-emerald-500 border-2 border-white absolute -bottom-0.5 -right-0.5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-bold text-slate-900 text-xs truncate">{tutor.name}</h4>
+                    <p className="text-[11px] text-indigo-700 font-semibold truncate">{tutor.title}</p>
+                    <p className="text-[10px] text-slate-400 truncate">{tutor.university}</p>
+                  </div>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <h4 className="font-bold text-slate-900 text-xs truncate">{tutor.name}</h4>
-                  <p className="text-[11px] text-indigo-700 font-semibold truncate">{tutor.title}</p>
-                  <p className="text-[10px] text-slate-400 truncate">{tutor.university}</p>
-                </div>
-              </div>
 
-              <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
-                <span className="flex items-center gap-1 text-amber-600">
-                  <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
-                  {tutor.rating.toFixed(2)}
-                </span>
-                <span className="text-emerald-600 text-[11px]">
-                  ⚡ ~{tutor.averageResponseTimeMinutes || tutor.averageResponseMinutes || 4} dk
-                </span>
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
+                  <span className="flex items-center gap-1 text-amber-600">
+                    <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                    {tutor.rating?.toFixed(2) || '5.00'}
+                  </span>
+                  <span className="text-indigo-600 text-[11px] font-bold">
+                    Doğrulanmış Branş
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

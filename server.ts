@@ -7,7 +7,8 @@ import {
   INITIAL_TUTORS, 
   INITIAL_SUBSCRIPTION_PLANS, 
   INITIAL_STUDENT_PROFILE, 
-  INITIAL_NOTIFICATIONS 
+  INITIAL_NOTIFICATIONS,
+  INITIAL_ONLINE_COURSES
 } from './src/data/mockData';
 import { 
   Question, 
@@ -16,7 +17,8 @@ import {
   AppNotification, 
   SubscriptionPlanId, 
   QuestionSolution, 
-  QuestionRating 
+  QuestionRating,
+  OnlineCourse
 } from './src/types';
 
 // In-Memory Database State
@@ -24,6 +26,7 @@ let questionsDB: Question[] = JSON.parse(JSON.stringify(INITIAL_QUESTIONS));
 let tutorsDB: Tutor[] = JSON.parse(JSON.stringify(INITIAL_TUTORS));
 let studentProfileDB: StudentProfile = JSON.parse(JSON.stringify(INITIAL_STUDENT_PROFILE));
 let notificationsDB: AppNotification[] = JSON.parse(JSON.stringify(INITIAL_NOTIFICATIONS));
+let coursesDB: OnlineCourse[] = JSON.parse(JSON.stringify(INITIAL_ONLINE_COURSES));
 let pendingAlertSettingsDB = {
   thresholdMinutes: 5,
   autoReminderEnabled: true,
@@ -570,68 +573,157 @@ Lütfen bu soru için JSON formatında aşağıdaki yapıyı döndür:
     res.json({ success: true, data: tutor });
   });
 
-  // 3. Subscriptions & Student Profile API
-  app.get('/api/subscription/plans', (req, res) => {
-    res.json({ success: true, data: INITIAL_SUBSCRIPTION_PLANS });
+  // 3. Online Courses API (Tek tek veya toplu satın alma, manuel fiyat, ders & ödev PDF)
+  app.get('/api/courses', (req, res) => {
+    res.json({ success: true, data: coursesDB });
   });
 
+  app.get('/api/courses/:id', (req, res) => {
+    const course = coursesDB.find(c => c.id === req.params.id);
+    if (!course) {
+      return res.status(404).json({ success: false, error: 'Ders bulunamadı' });
+    }
+    res.json({ success: true, data: course });
+  });
+
+  // Upload / Create new online course with manual price, lesson PDF, homework PDF
+  app.post('/api/courses', (req, res) => {
+    try {
+      const {
+        title,
+        subject,
+        gradeLevel,
+        description,
+        instructorName,
+        instructorTitle,
+        price,
+        thumbnailUrl,
+        videoUrl,
+        durationMinutes,
+        lessonPdfUrl,
+        lessonPdfTitle,
+        homeworkPdfUrl,
+        homeworkPdfTitle
+      } = req.body;
+
+      if (!title || !subject || !videoUrl) {
+        return res.status(400).json({ success: false, error: 'Lütfen ders başlığı, branş ve video URL alanlarını doldurunuz.' });
+      }
+
+      const manualPrice = Number(price) >= 0 ? Number(price) : 50;
+
+      const newCourse: OnlineCourse = {
+        id: `crs-${Date.now()}`,
+        title: title.trim(),
+        subject: subject || 'Matematik',
+        gradeLevel: gradeLevel || 'TYT / AYT (YKS)',
+        description: description || 'Ders içeriği ve kazanım anlatımı.',
+        instructorName: instructorName || 'Matematik & Geometri Eğitmeni',
+        instructorTitle: instructorTitle || 'Uzman Eğitmen',
+        price: manualPrice, // Manuel belirlenen ders fiyatı
+        thumbnailUrl: thumbnailUrl || 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&auto=format&fit=crop&q=80',
+        videoUrl: videoUrl.trim(),
+        durationMinutes: Number(durationMinutes) || 45,
+        lessonPdfUrl: lessonPdfUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+        lessonPdfTitle: lessonPdfTitle || `${title.replace(/\s+/g, '_')}_Ders_Notu.pdf`,
+        homeworkPdfUrl: homeworkPdfUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+        homeworkPdfTitle: homeworkPdfTitle || `${title.replace(/\s+/g, '_')}_Odev_Testi.pdf`,
+        createdAt: new Date().toISOString(),
+        purchased: false
+      };
+
+      coursesDB.unshift(newCourse);
+
+      // Notification
+      const courseNotif: AppNotification = {
+        id: `notif-${Date.now()}`,
+        recipientRole: 'all',
+        title: '🎬 Yeni Online Ders Eklendi!',
+        message: `"${newCourse.title}" dersi yüklendi. Ders PDF'i ve Ödev PDF'i indirilebilir durumda.`,
+        type: 'course_purchased',
+        read: false,
+        createdAt: new Date().toISOString()
+      };
+      notificationsDB.unshift(courseNotif);
+
+      res.status(201).json({ success: true, message: 'Online ders başarıyla yüklendi.', data: newCourse });
+    } catch (err) {
+      res.status(500).json({ success: false, error: 'Ders yüklenirken hata oluştu.' });
+    }
+  });
+
+  // Individual course purchase (Tek tek satın al)
+  app.post('/api/courses/:id/purchase', (req, res) => {
+    const course = coursesDB.find(c => c.id === req.params.id);
+    if (!course) {
+      return res.status(404).json({ success: false, error: 'Ders bulunamadı' });
+    }
+
+    course.purchased = true;
+
+    // Send confirmation notification
+    const purchaseNotif: AppNotification = {
+      id: `notif-${Date.now()}`,
+      recipientRole: 'student',
+      title: '🎉 Ders Satın Alındı!',
+      message: `"${course.title}" online dersini tekil olarak (₺${course.price}) satın aldınız. Artık videoyu izleyebilir, ders ve ödev PDF'lerini sınırsız indirebilirsiniz!`,
+      type: 'course_purchased',
+      read: false,
+      createdAt: new Date().toISOString()
+    };
+    notificationsDB.unshift(purchaseNotif);
+
+    res.json({
+      success: true,
+      message: `"${course.title}" başarıyla satın alındı!`,
+      data: course
+    });
+  });
+
+  // Bulk course purchase (Toplu satın al)
+  app.post('/api/courses/bulk-purchase', (req, res) => {
+    const { courseIds } = req.body;
+    let targetCourses = coursesDB;
+    if (Array.isArray(courseIds) && courseIds.length > 0) {
+      targetCourses = coursesDB.filter(c => courseIds.includes(c.id));
+    }
+
+    targetCourses.forEach(c => {
+      c.purchased = true;
+    });
+
+    const totalCalculated = targetCourses.reduce((sum, c) => sum + c.price, 0);
+    const discountedTotal = Math.round(totalCalculated * 0.75); // %25 toplu indirim
+
+    // Send confirmation notification
+    const purchaseNotif: AppNotification = {
+      id: `notif-${Date.now()}`,
+      recipientRole: 'student',
+      title: '🌟 Toplu Ders Paketi Satın Alındı!',
+      message: `${targetCourses.length} adet online ders avantajlı toplu fiyatla (₺${discountedTotal}) kütüphanenize eklendi. Tüm ders videoları, ders notu PDF'leri ve ödev testleri erişiminize açıldı.`,
+      type: 'course_purchased',
+      read: false,
+      createdAt: new Date().toISOString()
+    };
+    notificationsDB.unshift(purchaseNotif);
+
+    res.json({
+      success: true,
+      message: `${targetCourses.length} adet ders toplu olarak satın alındı!`,
+      totalPaid: discountedTotal,
+      data: coursesDB
+    });
+  });
+
+  // Student Profile API
   app.get('/api/student/profile', (req, res) => {
     res.json({ success: true, data: studentProfileDB });
   });
 
-  const handleSubscribe = (req: express.Request, res: express.Response) => {
-    const { planId } = req.body as { planId: SubscriptionPlanId };
-    const plan = INITIAL_SUBSCRIPTION_PLANS.find(p => p.id === planId);
-
-    if (!plan) {
-      return res.status(400).json({ success: false, error: 'Geçersiz paket seçimi' });
-    }
-
-    const now = new Date();
-    let expiryDate = new Date();
-    if (planId === 'weekly') {
-      expiryDate.setDate(now.getDate() + 7);
-    } else if (planId === 'monthly') {
-      expiryDate.setDate(now.getDate() + 30);
-    } else if (planId === 'three_months') {
-      expiryDate.setDate(now.getDate() + 90);
-    }
-
-    studentProfileDB.activePlan = plan.id;
-    studentProfileDB.planName = plan.name;
-    studentProfileDB.planExpiresAt = planId === 'free' ? undefined : expiryDate.toISOString();
-    studentProfileDB.dailyStandardTotal = plan.dailyStandardLimit;
-    studentProfileDB.dailyStandardRemaining = plan.dailyStandardLimit;
-    studentProfileDB.dailyVideoTotal = plan.dailyVideoLimit;
-    studentProfileDB.dailyVideoRemaining = plan.dailyVideoLimit;
-
-    // Send confirmation notification
-    const subNotif: AppNotification = {
-      id: `notif-${Date.now()}`,
-      recipientRole: 'student',
-      title: '💎 Aboneliğiniz Aktifleştirildi!',
-      message: `${plan.name} başarıyla tanımlandı. Artık günde ${plan.dailyStandardLimit} soru ve ${plan.dailyVideoLimit} HD video çözüm hakkınız var!`,
-      type: 'subscription_active',
-      read: false,
-      createdAt: new Date().toISOString()
-    };
-    notificationsDB.unshift(subNotif);
-
-    res.json({
-      success: true,
-      message: 'Abonelik başarıyla aktifleştirildi.',
-      data: studentProfileDB,
-      profile: studentProfileDB
-    });
-  };
-
-  app.post('/api/student/subscribe', handleSubscribe);
-  app.post('/api/subscribe', handleSubscribe);
-
   // Reset daily/weekly limits demo endpoint
   app.post('/api/student/profile/reset-limits', (req, res) => {
     studentProfileDB.activePlan = 'free';
-    studentProfileDB.planName = 'Ücretsiz Başlangıç';
+    studentProfileDB.planName = 'Ücretsiz Standart';
     studentProfileDB.planExpiresAt = undefined;
     studentProfileDB.dailyStandardTotal = 3;
     studentProfileDB.dailyStandardRemaining = 3;
@@ -1102,18 +1194,14 @@ Lütfen soru için pedagojik, detaylı ve anlaşılır bir çözüm hazırla.
 
   // Reset free questions limit (for testing demo purpose)
   app.post('/api/student/reset-daily-limit', (req, res) => {
-    if (studentProfileDB.activePlan === 'free') {
-      studentProfileDB.dailyStandardRemaining = 3;
-      studentProfileDB.dailyStandardTotal = 3;
-      studentProfileDB.weeklyStandardRemaining = 3;
-      studentProfileDB.weeklyStandardTotal = 3;
-      studentProfileDB.dailyVideoRemaining = 0;
-      studentProfileDB.dailyVideoTotal = 0;
-    } else {
-      const plan = INITIAL_SUBSCRIPTION_PLANS.find(p => p.id === studentProfileDB.activePlan) || INITIAL_SUBSCRIPTION_PLANS[0];
-      studentProfileDB.dailyStandardRemaining = plan.dailyStandardLimit;
-      studentProfileDB.dailyVideoRemaining = plan.dailyVideoLimit;
-    }
+    studentProfileDB.activePlan = 'free';
+    studentProfileDB.planName = 'Ücretsiz Standart';
+    studentProfileDB.dailyStandardRemaining = 3;
+    studentProfileDB.dailyStandardTotal = 3;
+    studentProfileDB.weeklyStandardRemaining = 3;
+    studentProfileDB.weeklyStandardTotal = 3;
+    studentProfileDB.dailyVideoRemaining = 0;
+    studentProfileDB.dailyVideoTotal = 0;
     res.json({ success: true, data: studentProfileDB });
   });
 

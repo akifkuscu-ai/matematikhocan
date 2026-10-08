@@ -58,32 +58,23 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
             </div>
 
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-extrabold self-center sm:self-auto">
-              <Crown className="w-3.5 h-3.5 text-amber-500" />
-              {studentProfile.planName}
+              <span>Haftalık 3 Ücretsiz Soru Kotası</span>
             </div>
           </div>
 
           <p className="text-xs text-slate-600 leading-relaxed max-w-xl">
-            YKS ve okul sınavlarına hazırlıkta yapamadığı soruları anında uzman eğitmenlerden çözen aktif öğrenci.
+            YKS ve okul sınavlarına hazırlıkta yapamadığı matematik ve geometri sorularını uzman eğitmenlerden çözen aktif öğrenci profili.
           </p>
 
           <div className="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-2">
             <button
               type="button"
-              onClick={onOpenSubscribe}
-              className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
-            >
-              <Crown className="w-3.5 h-3.5" />
-              Paket Yükselt & Limit Artır
-            </button>
-            <button
-              type="button"
               onClick={onResetLimitsDemo}
-              className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition flex items-center gap-1.5"
+              className="px-3.5 py-2 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl transition flex items-center gap-1.5"
               title="Test amaçlı haftalık ücretsiz hakları yenile"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-              Hakları Sıfırla (Demo)
+              <RotateCcw className="w-3.5 h-3.5 text-indigo-500" />
+              Haftalık Hakları Sıfırla (Demo)
             </button>
           </div>
         </div>

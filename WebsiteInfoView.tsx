@@ -45,7 +45,7 @@ export const WebsiteInfoView: React.FC<WebsiteInfoViewProps> = ({
   const faqs = [
     {
       q: 'matematikhocan.com nedir ve nasıl çalışır?',
-      a: 'matematikhocan.com; ilkokul, ortaokul (LGS), lise ve üniversiteye hazırlık (YKS TYT-AYT, KPSS, DGS) öğrencilerinin çözemediği matematik ve geometri sorularını uzman branş öğretmenlerine gönderip dakikalar içinde formüllü yazılı veya HD videolu çözüm alabildiği bağımsız bir web eğitim portalıdır.'
+      a: 'matematikhocan.com; ilkokul, ortaokul (LGS), lise ve üniversiteye hazırlık (YKS TYT-AYT, KPSS, DGS) öğrencilerinin çözemediği matematik ve geometri sorularını uzman branş öğretmenlerine gönderip formüllü yazılı veya HD videolu çözüm alabildiği bağımsız bir web eğitim portalıdır.'
     },
     {
       q: 'Haftalık 3 soru gerçekten tamamen ücretsiz mi?',
@@ -138,9 +138,9 @@ export const WebsiteInfoView: React.FC<WebsiteInfoViewProps> = ({
             <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
               <Clock className="w-6 h-6" />
             </div>
-            <h3 className="font-extrabold text-slate-900 text-base">Ortalama 10 Dk. Yanıt</h3>
+            <h3 className="font-extrabold text-slate-900 text-base">Detaylı & Titiz Çözüm</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Sorularınız havuzda bekletilmez. Aktif nöbetçi matematik öğretmenlerimiz sorunuzu anında üstlenip çözer.
+              Sorularınız branş öğretmenlerimiz tarafından formülleri, geometrik çizimleri ve püf noktalarıyla özenle çözülür.
             </p>
           </div>
 

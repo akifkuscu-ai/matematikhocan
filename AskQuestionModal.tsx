@@ -186,9 +186,7 @@ export const AskQuestionModal: React.FC<AskQuestionModalProps> = ({
 
     if (hasLimitIssue) {
       setErrorMsg(
-        studentProfile.activePlan === 'free'
-          ? 'Haftalık 3 ücretsiz soru sorma limitiniz doldu (3/3 kullanıldı). Lütfen abonelik paketinizi yükseltin.'
-          : 'Soru sorma limitiniz doldu. Lütfen abonelik paketinizi yükseltin.'
+        'Bu haftaki 3 adet ücretsiz soru sorma limitiniz doldu (3/3 kullanıldı). Haklarınız haftalık olarak yenilenmektedir.'
       );
       return;
     }
@@ -519,7 +517,7 @@ export const AskQuestionModal: React.FC<AskQuestionModalProps> = ({
 
                 <div className="mt-3 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px]">
                   <span className="text-slate-500 flex items-center gap-1">
-                    <Clock className="w-3 h-3 text-slate-400" /> Ort. 5-10 dk
+                    <Clock className="w-3 h-3 text-slate-400" /> Adım Adım Formüllü Çözüm
                   </span>
                   <span className={`font-bold ${studentProfile.dailyStandardRemaining > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                     {studentProfile.dailyStandardRemaining > 0 ? `${studentProfile.dailyStandardRemaining} ${studentProfile.activePlan === 'free' ? 'haftalık hak hazır' : 'hak hazır'}` : 'Hak bitti'}
